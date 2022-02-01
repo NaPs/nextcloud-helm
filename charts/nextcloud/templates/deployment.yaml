@@ -297,7 +297,7 @@ spec:
         command:
           - "sh"
           - "-c"
-          - "php /var/www/html/occ fulltextsearch:stop ; php /var/www/html/occ fulltextsearch:index --output=json -n --no-ansi ; php /var/www/html/occ fulltextsearch:live --output=json -n --no-ansi"
+          - "php /var/www/html/occ fulltextsearch:stop ; while true; do php /var/www/html/occ fulltextsearch:index --output=json -n --no-ansi ; sleep 900 ; done"
         env:
         {{- if .Values.internalDatabase.enabled }}
         - name: SQLITE_DATABASE
