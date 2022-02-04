@@ -452,6 +452,6 @@ rbac:
     create: true
     name: nextcloud-serviceaccount
 
-fullTextSearchLiveIndexer:
+internalCron:
   enabled: false
   resources: {}

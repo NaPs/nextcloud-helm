@@ -280,24 +280,17 @@ spec:
         {{- if .Values.nextcloud.extraVolumeMounts }}
 {{ toYaml .Values.nextcloud.extraVolumeMounts | indent 8 }}
         {{- end }}
-        {{- if .Values.fullTextSearchLiveIndexer.enabled }}
-      - name: {{ .Chart.Name }}-fts-live
+        {{- if .Values.internalCron.enabled }}
+      - name: {{ .Chart.Name }}-cron
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         securityContext:
           runAsUser: 33
           runAsGroup: 33
-        lifecycle:
-          preStop:
-            exec:
-              command:
-                - "sh"
-                - "-c"
-                - "php /var/www/html/occ fulltextsearch:stop"
         command:
           - "sh"
           - "-c"
-          - "php /var/www/html/occ fulltextsearch:stop ; while true; do php /var/www/html/occ fulltextsearch:index --output=json -n --no-ansi ; sleep 900 ; done"
+          - "while true; do php -f cron.php ; sleep 300 ; done"
         env:
         {{- if .Values.internalDatabase.enabled }}
         - name: SQLITE_DATABASE
@@ -412,7 +405,7 @@ spec:
 {{ toYaml .Values.nextcloud.extraEnv | indent 8 }}
         {{- end }}
         resources:
-{{ toYaml .Values.fullTextSearchLiveIndexer.resources | indent 10 }}
+{{ toYaml .Values.internalCron.resources | indent 10 }}
         volumeMounts:
         - name: nextcloud-main
           mountPath: /var/www/
