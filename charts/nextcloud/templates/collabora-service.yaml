@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "nextcloud.fullname" . }}-collabora
+  labels:
+    app.kubernetes.io/name: {{ include "nextcloud.name" . }}-collabora
+    helm.sh/chart: {{ include "nextcloud.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/component: app
+spec:
+  type: {{ .Values.collabora.service.type }}
+  {{- if eq .Values.collabora.service.type "LoadBalancer" }}
+  loadBalancerIP: {{ default "" .Values.collabora.service.loadBalancerIP }}
+  {{- end }}
+  ports:
+  - port: {{ .Values.collabora.service.port }}
+    targetPort: http
+    protocol: TCP
+    name: http
+    {{- if eq .Values.collabora.service.type "NodePort" }}
+    nodePort: {{ default "" .Values.collabora.service.nodePort}}
+    {{- end }}
+  selector:
+    app.kubernetes.io/name: {{ include "nextcloud.name" . }}-collabora
+    app.kubernetes.io/component: app

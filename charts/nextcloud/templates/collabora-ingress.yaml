@@ -1,0 +1,45 @@
+{{- if .Values.collabora.enabled }}
+apiVersion: {{ include "nextcloud.ingress.apiVersion" . }}
+kind: Ingress
+metadata:
+  name: {{ template "nextcloud.fullname" . }}-collabora
+  labels:
+    app.kubernetes.io/name: {{ include "nextcloud.name" . }}-collabora
+    helm.sh/chart: {{ include "nextcloud.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/component: app
+{{- if .Values.collabora.ingress.labels }}
+{{ toYaml .Values.collabora.ingress.labels | indent 4 }}
+{{- end }}
+{{- if .Values.collabora.ingress.annotations }}
+  annotations:
+{{ toYaml .Values.collabora.ingress.annotations | indent 4 }}
+{{- end }}
+spec:
+  {{- if .Values.collabora.ingress.className }}
+  ingressClassName: {{ .Values.collabora.ingress.className }}
+  {{- end }}
+  rules:
+  - host: {{ .Values.collabora.ingress.host }}
+    http:
+      paths:
+      - path: {{ .Values.collabora.ingress.path }}
+        {{- if eq (include "nextcloud.ingress.apiVersion" $) "networking.k8s.io/v1" }}
+        pathType: {{ .Values.collabora.ingress.pathType }}
+        {{- end }}
+        backend:
+          {{- if eq (include "nextcloud.ingress.apiVersion" $) "networking.k8s.io/v1" }}
+          service:
+            name: {{ template "nextcloud.fullname" . }}-collabora
+            port:
+              number: {{ .Values.collabora.service.port }}
+          {{- else }}
+          serviceName: {{ template "nextcloud.fullname" . }}
+          servicePort: {{ .Values.collabora.service.port }}
+          {{- end }}
+{{- if .Values.collabora.ingress.tls }}
+  tls:
+{{ toYaml .Values.collabora.ingress.tls | indent 4 }}
+{{- end -}}
+{{- end }}

@@ -455,3 +455,30 @@ rbac:
 internalCron:
   enabled: false
   resources: {}
+
+collabora:
+  enabled: false
+  replicaCount: 1
+  deploymentAnnotations:
+  podLabels:
+  podAnnotations:
+  affinity:
+  tolerations:
+  resources: {}
+  image:
+    repository: collabora/code
+    tag: 21.11.1.4.1
+    pullPolicy: IfNotPresent
+  ingress:
+    enabled: false
+    host:
+    # className: nginx
+    annotations: {}
+    labels: {}
+    path: /
+    pathType: Prefix
+  service:
+    type: ClusterIP
+    port: 9980
+    loadBalancerIP: nil
+    nodePort: nil
